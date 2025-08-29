@@ -4,6 +4,7 @@ import { CollectorsService } from '../collectors/collectors.service';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import qs from 'qs'; 
+import https from 'https';
 
 @Injectable()
 export class AuthService {
@@ -60,8 +61,9 @@ export class AuthService {
     try {
       const res = await axios.post(url, data, {
         headers,
-        timeout: 15000, // 15 seconds
-        validateStatus: status => true, // don't throw for HTTP errors
+        timeout: 15000,
+        validateStatus: status => true,
+        httpsAgent: new https.Agent({ family: 4 }), // Force IPv4
       });
   
       console.log('Response status:', res.status);
@@ -85,12 +87,15 @@ export class AuthService {
       throw new UnauthorizedException('Failed to get general backend token');
     }
   }
-  
-  
   async login(phoneNumber: number, password: string) {
     const collector = await this.validateCollector(phoneNumber, password);
     const generalTokenData = await this.getGeneralBackendToken();
-    const payload = { phoneNumber: collector.phoneNumber, sub: collector.id };
+    const payload = {
+      phoneNumber: collector.phoneNumber,
+      sub: collector.id,
+      general_access_token: generalTokenData.access_token || generalTokenData.token,
+      communes: collector.communes 
+    };
     const localJwt = this.jwtService.sign(payload);
   
     return {

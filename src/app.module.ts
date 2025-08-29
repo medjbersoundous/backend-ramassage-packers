@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'; // <-- added
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CollectorsModule } from './collectors/collectors.module';
 import { Collector } from './collectors/collector.entity';
 import { AuthModule } from './auth/auth.module';
+import { PickupsModule } from './pickups/pickups.module'; 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     CollectorsModule,
     AuthModule,
+    PickupsModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
