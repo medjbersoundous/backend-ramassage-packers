@@ -9,7 +9,8 @@ export class AuthController {
   async login(
     @Body('phoneNumber') phoneNumber: number,
     @Body('password') password: string,
+    @Body('expoPushToken') expoPushToken?: string,  
   ) {
-    return this.authService.login(Number(phoneNumber), password);
+    return this.authService.login(Number(phoneNumber), password, expoPushToken);
   }
 }

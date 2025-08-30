@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CollectorsService } from './collectors.service';
 import { CollectorsController } from './collectors.controller';
 import { Collector } from './collector.entity';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Collector])],
+  imports: [TypeOrmModule.forFeature([Collector]),   NotificationsModule,],
   controllers: [CollectorsController],
   providers: [CollectorsService],
   exports: [CollectorsService],

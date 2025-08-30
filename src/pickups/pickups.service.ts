@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import https from 'https';
+import { Pickup } from './pickups.entity';
 
 @Injectable()
 export class PickupsService {
@@ -43,21 +44,30 @@ export class PickupsService {
         throw new UnauthorizedException('Failed to fetch pickups');
       }
 
-      const today = new Date();
-      const filteredPickups = res.data.filter(pickup => {
-        const inCommune = Array.isArray(collector.communes) && collector.communes.includes(pickup.province);
-        
-        const pickupDate = new Date(pickup.date);
-        const isToday =
-          pickupDate.getFullYear() === today.getFullYear() &&
-          pickupDate.getMonth() === today.getMonth() &&
-          pickupDate.getDate() === today.getDate();
+      // Helper: convert to YYYY-MM-DD in Algeria TZ
+      const toAlgiersDate = (date: string | Date) =>
+        new Date(date).toLocaleDateString('en-CA', { timeZone: 'Africa/Algiers' });
 
-        return inCommune && isToday;
+      // Today string (Algeria timezone)
+      const todayStr = toAlgiersDate(new Date());
+      // console.log('📅 Today (Algiers):', todayStr);
+
+      // Filter only today's pickups in collector's communes
+      const todayPickups = res.data.filter(pickup => {
+        const inCommune =
+          Array.isArray(collector.communes) &&
+          collector.communes.includes(pickup.province);
+
+        if (!inCommune) return false;
+
+        const pickupStr = toAlgiersDate(pickup.date);
+        return pickupStr === todayStr;
       });
 
-      console.log('Filtered pickups for today:', filteredPickups.length);
-      return filteredPickups;
+      console.log('✅ Today pickups count:', todayPickups.length);
+      // console.log('Today IDs:', todayPickups.map(p => p.id));
+
+      return todayPickups;
     } catch (err) {
       console.error('Error fetching pickups:', err.message);
       console.error('Full error:', err);

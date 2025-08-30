@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Collector } from './collector.entity';
 import * as bcrypt from 'bcrypt';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class CollectorsService {
   constructor(
     @InjectRepository(Collector)
     private collectorsRepo: Repository<Collector>,
+    private readonly notificationsService: NotificationsService,  
   ) {}
 
   async create(
@@ -16,31 +18,29 @@ export class CollectorsService {
     password: string,
     phoneNumber: number,
     communes: string[],
+    expoPushToken?: string,
   ) {
     const hashedPassword = await bcrypt.hash(password, 10);
-  
-    // Get the collector with the highest current ID
+
     const lastCollector = await this.collectorsRepo
-      .createQueryBuilder("collector")
-      .select("collector.id")
-      .orderBy("collector.id", "DESC")
+      .createQueryBuilder('collector')
+      .select('collector.id')
+      .orderBy('collector.id', 'DESC')
       .getOne();
-  
-    // Determine next ID
+
     const nextId = lastCollector ? lastCollector.id + 1 : 1;
-  
+
     const collector = this.collectorsRepo.create({
-      id: nextId, // assign calculated ID
+      id: nextId,
       username,
       password: hashedPassword,
       phoneNumber,
       communes,
+      expoPushToken,
     });
-  
+
     return this.collectorsRepo.save(collector);
   }
-  
-  
 
   async findAll() {
     return this.collectorsRepo.find();
@@ -66,5 +66,19 @@ export class CollectorsService {
   async remove(id: number) {
     const collector = await this.findOne(id);
     return this.collectorsRepo.remove(collector);
+  }
+
+  async updateExpoPushToken(id: number, token: string) {
+    const collector = await this.findOne(id);
+    collector.expoPushToken = token;
+    return this.collectorsRepo.save(collector);
+  }
+
+  async findByPhoneNumber(phoneNumber: number) {
+    return this.collectorsRepo.findOne({ where: { phoneNumber } });
+  }
+
+  async sendPushNotification(expoPushToken: string, title: string, body: string) {
+    return this.notificationsService.sendNotification(expoPushToken, title, body);
   }
 }

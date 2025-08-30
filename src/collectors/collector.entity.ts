@@ -18,4 +18,8 @@ export class Collector {
 
   @Column({ nullable: true })
   fcmToken: string;
+  
+  @Column({ nullable: true })
+  expoPushToken: string;
+
 }
