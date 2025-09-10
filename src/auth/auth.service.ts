@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   // 🔹 Get a new token with password
-  private async getGeneralBackendToken() {
+   async getGeneralBackendToken() {
     const BASE_URL = process.env.BASE_URL;
     const EMAIL = process.env.GENERAL_EMAIL;
     const PASSWORD = process.env.GENERAL_PASSWORD;

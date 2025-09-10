@@ -7,6 +7,7 @@ import { CollectorsModule } from './collectors/collectors.module';
 import { Collector } from './collectors/collector.entity';
 import { AuthModule } from './auth/auth.module';
 import { PickupsModule } from './pickups/pickups.module'; 
+import { PickupEntity } from './pickups/pickups.entity';
 
 @Module({
   imports: [
@@ -14,14 +15,15 @@ import { PickupsModule } from './pickups/pickups.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'database.sqlite',
-      entities: [Collector],
-      synchronize: true,
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      entities: [Collector, PickupEntity],
+      synchronize: true, // auto create tables in Supabase
+      ssl: { rejectUnauthorized: false }, // ✅ required for Supabase
     }),
     CollectorsModule,
     AuthModule,
-    PickupsModule, 
+    PickupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

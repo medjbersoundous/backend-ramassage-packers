@@ -13,7 +13,7 @@ export class Collector {
   @Column({ unique: true })
   phoneNumber:number;
 
-  @Column('simple-array') 
+  @Column({ type: 'jsonb', nullable: true })
   communes: string[];
 
   @Column({ nullable: true })

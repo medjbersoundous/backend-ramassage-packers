@@ -1,9 +1,25 @@
-import { Module } from '@nestjs/common';
+// pickups.module.ts
+import { Module, OnModuleInit } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PickupsService } from './pickups.service';
 import { PickupsController } from './pickups.controller';
-
+import { PickupsRepository } from './pickups.repository';
+import { PickupEntity } from './pickups.entity';
+import { PickupsSyncService } from './pickups-sync.service';
+import { CollectorsModule } from 'src/collectors/collectors.module';
+import { AuthModule } from 'src/auth/auth.module';
 @Module({
-  providers: [PickupsService],
+  imports: [TypeOrmModule.forFeature([PickupEntity]), CollectorsModule, AuthModule],
+  providers: [PickupsService, PickupsRepository, PickupsSyncService],
   controllers: [PickupsController],
 })
-export class PickupsModule {}
+export class PickupsModule implements OnModuleInit {
+  constructor(private readonly pickupsSyncService: PickupsSyncService) {}
+
+  async onModuleInit() {
+    // this ensures the sync service runs at startup
+    console.log('🚀 PickupsModule initialized, starting sync service...');
+    await (this.pickupsSyncService as any).onModuleInit();
+
+  }
+}
