@@ -5,7 +5,12 @@ import axios from 'axios';
 export class NotificationsService {
   private readonly expoApiUrl = 'https://exp.host/--/api/v2/push/send';
 
-  async sendNotification(expoToken: string, title: string, body: string) {
+  async sendNotification(
+    expoToken: string,
+    title: string,
+    body: string,
+    data?: Record<string, any>, // 👈 optional payload
+  ) {
     if (!expoToken) {
       throw new HttpException('Expo token is required', HttpStatus.BAD_REQUEST);
     }
@@ -16,12 +21,16 @@ export class NotificationsService {
         sound: 'default',
         title,
         body,
+        data, // 👈 attach custom data if provided
       });
 
       return response.data;
     } catch (error) {
       console.error('Error sending notification:', error.response?.data || error.message);
-      throw new HttpException('Failed to send notification', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to send notification',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

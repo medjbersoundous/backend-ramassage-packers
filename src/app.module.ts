@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule'; // ✅ import this
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CollectorsModule } from './collectors/collectors.module';
@@ -18,9 +19,10 @@ import { PickupEntity } from './pickups/pickups.entity';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [Collector, PickupEntity],
-      synchronize: true, // auto create tables in Supabase
-      ssl: { rejectUnauthorized: false }, // ✅ required for Supabase
+      synchronize: true,
+      ssl: { rejectUnauthorized: false },
     }),
+    ScheduleModule.forRoot(), // ✅ enable cron jobs
     CollectorsModule,
     AuthModule,
     PickupsModule,

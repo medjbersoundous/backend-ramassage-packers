@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+export type PickupStatus = 'pending' | 'done' | 'canceled';
 
 @Entity('pickups')
 export class PickupEntity {
@@ -29,13 +31,16 @@ export class PickupEntity {
   @Column({ nullable: true })
   note: string;
 
+  @Column({ type: 'enum', enum: ['pending', 'done', 'canceled'], default: 'pending' })
+  status: PickupStatus;
+
   @Column({ nullable: true })
   assigned_to: string;
 
-  @Column({ type: 'timestamp'})
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @Column({ type: 'timestamp'})
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
   @Column({ type: 'simple-json', nullable: true })

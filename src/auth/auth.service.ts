@@ -22,8 +22,8 @@ export class AuthService {
     return collector;
   }
 
-  // 🔹 Get a new token with password
-   async getGeneralBackendToken() {
+  // 🔹 Get a new token from general backend using password
+  async getGeneralBackendToken() {
     const BASE_URL = process.env.BASE_URL;
     const EMAIL = process.env.GENERAL_EMAIL;
     const PASSWORD = process.env.GENERAL_PASSWORD;
@@ -78,21 +78,23 @@ export class AuthService {
     }
   }
 
+  // 🔹 Login collector and save Expo push token
   async login(phoneNumber: number, password: string, expoPushToken?: string) {
     const collector = await this.validateCollector(phoneNumber, password);
 
+    // Save or update Expo push token if provided
     if (expoPushToken) {
       await this.collectorsService.updateExpoPushToken(collector.id, expoPushToken);
     }
 
-    // 🔹 get access + refresh token from external backend
+    // Get access + refresh token from external general backend
     const generalTokenData = await this.getGeneralBackendToken();
 
     const payload = {
       phoneNumber: collector.phoneNumber,
       sub: collector.id,
       general_access_token: generalTokenData.access_token,
-      general_refresh_token: generalTokenData.refresh_token, // 👈 keep this
+      general_refresh_token: generalTokenData.refresh_token,
       communes: collector.communes,
     };
 
@@ -107,7 +109,7 @@ export class AuthService {
       },
       local_access_token: localJwt,
       general_access_token: generalTokenData.access_token,
-      general_refresh_token: generalTokenData.refresh_token, // 👈 return it too
+      general_refresh_token: generalTokenData.refresh_token,
     };
   }
 }

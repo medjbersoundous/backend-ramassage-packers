@@ -8,8 +8,9 @@ import { PickupEntity } from './pickups.entity';
 import { PickupsSyncService } from './pickups-sync.service';
 import { CollectorsModule } from 'src/collectors/collectors.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([PickupEntity]), CollectorsModule, AuthModule],
+  imports: [TypeOrmModule.forFeature([PickupEntity]), CollectorsModule, AuthModule, NotificationsModule],
   providers: [PickupsService, PickupsRepository, PickupsSyncService],
   controllers: [PickupsController],
 })

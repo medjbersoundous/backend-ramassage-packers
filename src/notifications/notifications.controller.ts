@@ -10,7 +10,8 @@ export class NotificationsController {
     @Body('expoToken') expoToken: string,
     @Body('title') title: string,
     @Body('body') body: string,
+    @Body('data') data?: Record<string, any>,
   ) {
-    return this.notificationsService.sendNotification(expoToken, title, body);
+    return this.notificationsService.sendNotification(expoToken, title, body, data);
   }
 }
