@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule'; // ✅ import this
+import { ScheduleModule } from '@nestjs/schedule'; 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CollectorsModule } from './collectors/collectors.module';
@@ -22,7 +22,7 @@ import { PickupEntity } from './pickups/pickups.entity';
       synchronize: true,
       ssl: { rejectUnauthorized: false },
     }),
-    ScheduleModule.forRoot(), // ✅ enable cron jobs
+    ScheduleModule.forRoot(), 
     CollectorsModule,
     AuthModule,
     PickupsModule,

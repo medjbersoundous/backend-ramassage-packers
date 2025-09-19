@@ -9,7 +9,7 @@ export class NotificationsService {
     expoToken: string,
     title: string,
     body: string,
-    data?: Record<string, any>, // 👈 optional payload
+    data?: Record<string, any>,
   ) {
     if (!expoToken) {
       throw new HttpException('Expo token is required', HttpStatus.BAD_REQUEST);
@@ -21,7 +21,7 @@ export class NotificationsService {
         sound: 'default',
         title,
         body,
-        data, // 👈 attach custom data if provided
+        data, 
       });
 
       return response.data;

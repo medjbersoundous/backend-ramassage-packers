@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CollectorsService } from '../collectors/collectors.service';
 import * as bcrypt from 'bcrypt';
@@ -8,29 +8,31 @@ import https from 'https';
 @Injectable()
 export class AuthService {
   constructor(
-    private collectorsService: CollectorsService,
-    private jwtService: JwtService,
+    private readonly collectorsService: CollectorsService,
+    private readonly jwtService: JwtService,
   ) {}
-
   async validateCollector(phoneNumber: number, password: string) {
     const collector = await this.collectorsService.findByPhoneNumber(phoneNumber);
-    if (!collector) throw new UnauthorizedException('Invalid credentials');
+    if (!collector) {
+      throw new UnauthorizedException('Invalid credentials: collector not found');
+    }
 
     const isMatch = await bcrypt.compare(password, collector.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid credentials: wrong password');
+    }
 
     return collector;
   }
-
-  // 🔹 Get a new token from general backend using password
   async getGeneralBackendToken() {
-    const BASE_URL = process.env.BASE_URL;
-    const EMAIL = process.env.GENERAL_EMAIL;
-    const PASSWORD = process.env.GENERAL_PASSWORD;
-    const API_KEY = process.env.API_KEY;
+    const { BASE_URL, GENERAL_EMAIL, GENERAL_PASSWORD, API_KEY } = process.env;
+
+    if (!BASE_URL || !GENERAL_EMAIL || !GENERAL_PASSWORD || !API_KEY) {
+      throw new InternalServerErrorException('Missing required environment variables for authentication');
+    }
 
     const url = `${BASE_URL}/auth/v1/token?grant_type=password`;
-    const data = { email: EMAIL, password: PASSWORD };
+    const data = { email: GENERAL_EMAIL, password: GENERAL_PASSWORD };
     const headers = { 'Content-Type': 'application/json', apikey: API_KEY };
 
     try {
@@ -42,19 +44,20 @@ export class AuthService {
       });
 
       if (res.status !== 200) {
-        throw new UnauthorizedException(`Failed to get token: ${res.status}`);
+        throw new UnauthorizedException(`Failed to get token: status ${res.status}`);
       }
 
       return res.data;
-    } catch {
+    } catch (err) {
       throw new UnauthorizedException('Failed to get general backend token');
     }
   }
-
-  // 🔹 Refresh the general backend token
   async refreshGeneralBackendToken(refreshToken: string) {
-    const BASE_URL = process.env.BASE_URL;
-    const API_KEY = process.env.API_KEY;
+    const { BASE_URL, API_KEY } = process.env;
+
+    if (!BASE_URL || !API_KEY) {
+      throw new InternalServerErrorException('Missing required environment variables for token refresh');
+    }
 
     const url = `${BASE_URL}/auth/v1/token?grant_type=refresh_token`;
     const data = { refresh_token: refreshToken };
@@ -69,47 +72,73 @@ export class AuthService {
       });
 
       if (res.status !== 200) {
-        throw new UnauthorizedException(`Failed to refresh token: ${res.status}`);
+        return await this.getGeneralBackendToken();
       }
 
       return res.data;
     } catch {
-      throw new UnauthorizedException('Failed to refresh general backend token');
+      return await this.getGeneralBackendToken();
     }
   }
+async login(phoneNumber: number, password: string, expoPushToken?: string) {
+  const collector = await this.validateCollector(phoneNumber, password);
+  if (expoPushToken) {
+    await this.collectorsService.updateExpoPushToken(collector.id, expoPushToken);
+  }
+  const generalTokenData = await this.getGeneralBackendToken();
+  await this.collectorsService.updateGeneralTokens(
+    collector.id,
+    generalTokenData.access_token,
+    generalTokenData.refresh_token,
+  generalTokenData.expires_in
+  ? Date.now() + generalTokenData.expires_in * 1000
+  : undefined
 
-  // 🔹 Login collector and save Expo push token
-  async login(phoneNumber: number, password: string, expoPushToken?: string) {
-    const collector = await this.validateCollector(phoneNumber, password);
+  );
+  const payload = {
+    sub: collector.id,
+    phoneNumber: collector.phoneNumber,
+    communes: collector.communes,
+    general_access_token: generalTokenData.access_token,
+    general_refresh_token: generalTokenData.refresh_token,
+  };
 
-    // Save or update Expo push token if provided
-    if (expoPushToken) {
-      await this.collectorsService.updateExpoPushToken(collector.id, expoPushToken);
-    }
+  const localJwt = this.jwtService.sign(payload);
 
-    // Get access + refresh token from external general backend
-    const generalTokenData = await this.getGeneralBackendToken();
-
-    const payload = {
+  return {
+    collector: {
+      id: collector.id,
+      username: collector.username,
       phoneNumber: collector.phoneNumber,
-      sub: collector.id,
-      general_access_token: generalTokenData.access_token,
-      general_refresh_token: generalTokenData.refresh_token,
       communes: collector.communes,
-    };
+      expoPushToken: collector.expoPushToken,
+      generalAccessToken: generalTokenData.access_token,
+      generalRefreshToken: generalTokenData.refresh_token,
+    },
+    local_access_token: localJwt,
+    general_access_token: generalTokenData.access_token,
+    general_refresh_token: generalTokenData.refresh_token,
+  };
+}
+async getValidGeneralToken(collectorId: number): Promise<string> {
+  const { accessToken, refreshToken, expiresAt } = await this.collectorsService.getGeneralTokens(collectorId);
 
-    const localJwt = this.jwtService.sign(payload);
+  if (!accessToken || !refreshToken || !expiresAt || Date.now() >= expiresAt) {
+    const newTokens = refreshToken
+      ? await this.refreshGeneralBackendToken(refreshToken)
+      : await this.getGeneralBackendToken();
 
-    return {
-      collector: {
-        id: collector.id,
-        phoneNumber: collector.phoneNumber,
-        communes: collector.communes,
-        username: collector.username,
-      },
-      local_access_token: localJwt,
-      general_access_token: generalTokenData.access_token,
-      general_refresh_token: generalTokenData.refresh_token,
-    };
+    await this.collectorsService.updateGeneralTokens(
+      collectorId,
+      newTokens.access_token,
+      newTokens.refresh_token,
+      newTokens.expires_in ? Date.now() + newTokens.expires_in * 1000 : undefined,
+    );
+
+    return newTokens.access_token;
   }
+  return accessToken;
+}
+
+
 }

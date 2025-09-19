@@ -31,13 +31,12 @@ export class PickupsRepository {
 
     return this.repo.upsert(mapped, ['id']);
   }
- async getPickupsByCollector(collector) {
+async getPickupsByCollector(collector) {
   return this.repo
     .createQueryBuilder('pickup')
-    .where('pickup.province IN (:...communes)', { communes: collector.communes })
+    .where('pickup.assigned_to = :collectorId', { collectorId: collector.id })
     .getMany();
 }
-
   async findOneById(id: string) {
     return this.repo.findOne({ where: { id } });
   }

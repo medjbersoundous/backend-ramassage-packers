@@ -22,4 +22,13 @@ export class Collector {
   @Column({ nullable: true })
   expoPushToken: string;
 
+  @Column({ nullable: true })
+  generalAccessToken?: string;
+
+
+  @Column({ nullable: true })
+  generalRefreshToken?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  generalTokenExpiresAt?: number; 
 }

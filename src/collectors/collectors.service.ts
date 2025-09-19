@@ -81,4 +81,33 @@ export class CollectorsService {
   async sendPushNotification(expoPushToken: string, title: string, body: string) {
     return this.notificationsService.sendNotification(expoPushToken, title, body);
   }
+async updateGeneralTokens(
+  collectorId: number,
+  accessToken: string,
+  refreshToken: string,
+  expiresAt?: number,
+) {
+  const collector = await this.findOne(collectorId);
+  collector.generalAccessToken = accessToken;
+  collector.generalRefreshToken = refreshToken;
+collector.generalTokenExpiresAt = expiresAt ?? undefined;
+  return this.collectorsRepo.save(collector);
+}
+
+
+async getGeneralTokens(collectorId: number) {
+  const collector = await this.findOne(collectorId);
+  return {
+    refreshToken: collector.generalRefreshToken,
+    accessToken: collector.generalAccessToken,
+    expiresAt: collector.generalTokenExpiresAt,
+  };
+}
+async findOneById(id: number) {
+  const collector = await this.collectorsRepo.findOne({ where: { id } });
+  if (!collector) throw new NotFoundException(`Collector #${id} not found`);
+  return collector;
+}
+
+
 }
