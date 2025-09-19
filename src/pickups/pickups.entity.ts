@@ -39,6 +39,9 @@ export class PickupEntity {
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
+@Column({ type: 'varchar', length: 255, nullable: true })
+partner_name: string | null;
+
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;

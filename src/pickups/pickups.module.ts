@@ -9,9 +9,10 @@ import { PickupsSyncService } from './pickups-sync.service';
 import { CollectorsModule } from 'src/collectors/collectors.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
+import { PickupsGateway } from './pickups.gateway';
 @Module({
   imports: [TypeOrmModule.forFeature([PickupEntity]), CollectorsModule, AuthModule, NotificationsModule],
-  providers: [PickupsService, PickupsRepository, PickupsSyncService],
+  providers: [PickupsService, PickupsRepository, PickupsSyncService, PickupsGateway],
   controllers: [PickupsController],
 })
 export class PickupsModule implements OnModuleInit {
