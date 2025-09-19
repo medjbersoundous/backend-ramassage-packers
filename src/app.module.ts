@@ -19,7 +19,7 @@ import { PickupEntity } from './pickups/pickups.entity';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [Collector, PickupEntity],
-      synchronize: true,
+     synchronize: false,
       ssl: { rejectUnauthorized: false },
     }),
     ScheduleModule.forRoot(), 
