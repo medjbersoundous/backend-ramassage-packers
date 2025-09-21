@@ -9,6 +9,8 @@ import { Collector } from './collectors/collector.entity';
 import { AuthModule } from './auth/auth.module';
 import { PickupsModule } from './pickups/pickups.module'; 
 import { PickupEntity } from './pickups/pickups.entity';
+import { AdminModule } from './admin/admin.module';
+import { Admin } from './admin/admin.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { PickupEntity } from './pickups/pickups.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [Collector, PickupEntity],
+      entities: [Collector, PickupEntity, Admin],
      synchronize: false,
       ssl: { rejectUnauthorized: false },
     }),
@@ -26,6 +28,8 @@ import { PickupEntity } from './pickups/pickups.entity';
     CollectorsModule,
     AuthModule,
     PickupsModule,
+    AdminModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

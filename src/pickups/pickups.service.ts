@@ -20,25 +20,32 @@ export class PickupsService {
 async updatePickup(
   id: string,
   updates: Partial<PickupEntity>,
-  currentCollector: any
+  currentUser: any,
 ) {
   const pickup = await this.pickupsRepository.findOneById(id);
   if (!pickup) throw new NotFoundException('Pickup not found');
 
-  const oldAssignedTo = pickup.assigned_to;
-  if (String(oldAssignedTo) !== String(currentCollector.id)) {
-    throw new ForbiddenException('You are not allowed to update this pickup');
+  if (updates.assigned_to && updates.assigned_to !== pickup.assigned_to) {
+    if (currentUser.role !== 'admin') {
+      throw new ForbiddenException('Only admin can reassign pickups');
+    }
+  } else {
+    if (String(pickup.assigned_to) !== String(currentUser.id)) {
+      throw new ForbiddenException('You are not allowed to update this pickup');
+    }
   }
 
   Object.assign(pickup, updates);
   pickup.updated_at = new Date();
 
   const saved = await this.pickupsRepository.save(pickup);
-  if (updates.assigned_to && updates.assigned_to !== oldAssignedTo) {
+
+  if (updates.assigned_to && updates.assigned_to !== pickup.assigned_to) {
     this.pickupsGateway.notifyChange();
-  const newCollector = await this.collectorsService.findOneById(
-  Number(updates.assigned_to)
-);
+
+    const newCollector = await this.collectorsService.findOneById(
+      Number(updates.assigned_to),
+    );
 
     if (newCollector?.expoPushToken) {
       await this.notificationsService.sendNotification(
@@ -54,5 +61,6 @@ async updatePickup(
 
   return saved;
 }
+
 
 }
