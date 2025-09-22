@@ -6,9 +6,9 @@ import { PickupsController } from './pickups.controller';
 import { PickupsRepository } from './pickups.repository';
 import { PickupEntity } from './pickups.entity';
 import { PickupsSyncService } from './pickups-sync.service';
-import { CollectorsModule } from 'src/collectors/collectors.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
+import { CollectorsModule } from '../collectors/collectors.module';
+import { AuthModule } from '../auth/auth.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { PickupsGateway } from './pickups.gateway';
 @Module({
   imports: [TypeOrmModule.forFeature([PickupEntity]), CollectorsModule, AuthModule, NotificationsModule],

@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, Param, Put, Delete, Patch } from '@nestjs/common';
 import { CollectorsService } from './collectors.service';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Controller('collectors')
 export class CollectorsController {

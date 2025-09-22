@@ -3,24 +3,24 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity()
 export class Collector {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
   @Column({ unique: true })
-  phoneNumber:number;
+  phoneNumber!:number;
 
   @Column({ type: 'jsonb', nullable: true })
-  communes: string[];
+  communes!: string[];
 
   @Column({ nullable: true })
-  fcmToken: string;
+  fcmToken!: string;
   
   @Column({ nullable: true })
-  expoPushToken: string;
+  expoPushToken!: string;
 
   @Column({ nullable: true })
   generalAccessToken?: string;

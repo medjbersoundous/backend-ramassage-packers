@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Collector } from './src/collectors/collector.entity';
-import { PickupEntity } from './src/pickups/pickups.entity';
-import { Admin } from './src/admin/admin.entity';  
+import { Collector } from './collectors/collector.entity';
+import { PickupEntity } from './pickups/pickups.entity';
+import { Admin } from './admin/admin.entity';  
 import * as dotenv from 'dotenv';
 
 dotenv.config();

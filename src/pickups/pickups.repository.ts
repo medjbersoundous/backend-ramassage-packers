@@ -31,7 +31,7 @@ export class PickupsRepository {
 
     return this.repo.upsert(mapped, ['id']);
   }
-async getPickupsByCollector(collector) {
+async getPickupsByCollector(collector: { id: any; }) {
   return this.repo
     .createQueryBuilder('pickup')
     .where('pickup.assigned_to = :collectorId', { collectorId: collector.id })

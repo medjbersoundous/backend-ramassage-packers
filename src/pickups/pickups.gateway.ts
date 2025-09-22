@@ -1,13 +1,12 @@
-import {
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway({ cors: true }) 
+@WebSocketGateway({ cors: true })
 export class PickupsGateway {
-  @WebSocketServer() server: Server;
+  @WebSocketServer()
+  server!: Server; 
+
   notifyChange() {
-    this.server.emit('pickupsChanged'); 
+    this.server.emit('pickupsChanged');
   }
 }

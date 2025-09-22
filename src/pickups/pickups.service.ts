@@ -2,8 +2,8 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PickupsRepository } from './pickups.repository';
 import { PickupEntity } from './pickups.entity';
 import { PickupsGateway } from './pickups.gateway';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { CollectorsService } from 'src/collectors/collectors.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { CollectorsService } from '../collectors/collectors.service';
 @Injectable()
 export class PickupsService {
   constructor(
@@ -13,7 +13,7 @@ export class PickupsService {
     private readonly collectorsService: CollectorsService, 
   ) {}
 
-  async getPickupsByCollector(collector) {
+  async getPickupsByCollector(collector: any) {
     return this.pickupsRepository.getPickupsByCollector(collector);
   }
 

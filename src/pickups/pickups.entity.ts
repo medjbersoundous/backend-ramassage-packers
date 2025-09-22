@@ -5,46 +5,46 @@ export type PickupStatus = 'pending' | 'done' | 'canceled';
 @Entity('pickups')
 export class PickupEntity {
   @PrimaryColumn()
-  id: string;
+  id!: string;
 
   @Column({ nullable: true })
-  partner_id: string;
+  partner_id!: string;
 
   @Column({ nullable: true })
-  wilaya_id: string;
+  wilaya_id!: string;
 
   @Column({ type: 'timestamp' })
-  date: Date;
+  date!: Date;
 
   @Column({ nullable: true })
-  address: string;
+  address!: string;
 
   @Column({ nullable: true })
-  phone: string;
+  phone!: string;
 
   @Column({ nullable: true })
-  secondary_phone: string;
+  secondary_phone!: string;
 
   @Column({ nullable: true })
-  province: string;
+  province!: string;
 
   @Column({ nullable: true })
-  note: string;
+  note!: string;
 
   @Column({ type: 'enum', enum: ['pending', 'done', 'canceled'], default: 'pending' })
-  status: PickupStatus;
+  status!: PickupStatus;
 
   @Column({ nullable: true })
-  assigned_to: string;
+  assigned_to!: string;
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  created_at!: Date;
 @Column({ type: 'varchar', length: 255, nullable: true })
-partner_name: string | null;
+partner_name!: string | null;
 
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  updated_at!: Date;
 
   @Column({ type: 'simple-json', nullable: true })
   raw: any;
