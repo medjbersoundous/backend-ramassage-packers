@@ -11,6 +11,7 @@ import { PickupsModule } from './pickups/pickups.module';
 import { PickupEntity } from './pickups/pickups.entity';
 import { AdminModule } from './admin/admin.module';
 import { Admin } from './admin/admin.entity';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Admin } from './admin/admin.entity';
     AuthModule,
     PickupsModule,
     AdminModule,
+    NotificationsModule
     
   ],
   controllers: [AppController],

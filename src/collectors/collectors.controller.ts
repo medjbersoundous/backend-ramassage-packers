@@ -9,22 +9,23 @@ export class CollectorsController {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  @Post()
-  async create(
-    @Body('username') username: string,
-    @Body('password') password: string,
-    @Body('phoneNumber') phoneNumber: number,
-    @Body('communes') communes: string[],
-    @Body('expoPushToken') expoPushToken?: string,
-  ) {
-    return this.collectorsService.create(
-      username,
-      password,
-      phoneNumber,
-      communes,
-      expoPushToken,
-    );
-  }
+@Post()
+async create(
+  @Body('username') username: string,
+  @Body('password') password: string,
+  @Body('phoneNumber') phoneNumber: number,
+  @Body('communes') communes: string[],
+  @Body('expoPushTokens') expoPushTokens?: string[],   
+) {
+  return this.collectorsService.create(
+    username,
+    password,
+    phoneNumber,
+    communes,
+    expoPushTokens, 
+  );
+}
+
 
   @Get()
   findAll() {
@@ -52,7 +53,7 @@ export class CollectorsController {
       username?: string;
       password?: string;
       communes?: string[];
-      expoPushToken?: string;
+      expoPushTokens?: string[];  
     },
   ) {
     return this.collectorsService.update(id, updateData);
@@ -70,10 +71,14 @@ export class CollectorsController {
 
   @Post('notify')
   async notifyCollector(
-    @Body('expoPushToken') expoPushToken: string,
+    @Body('collectorId') collectorId: number,   
     @Body('title') title: string,
     @Body('body') body: string,
   ) {
-    return this.collectorsService.sendPushNotification(expoPushToken, title, body);
+    return this.collectorsService.sendPushNotification(
+      collectorId,
+      title,
+      body,
+    );
   }
 }

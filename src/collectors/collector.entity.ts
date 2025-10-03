@@ -19,8 +19,8 @@ export class Collector {
   @Column({ nullable: true })
   fcmToken!: string;
   
-  @Column({ nullable: true })
-  expoPushToken!: string;
+  @Column({ type: 'jsonb', nullable: true, default: () => "'[]'" })
+  expoPushTokens!: string[];
 
   @Column({ nullable: true })
   generalAccessToken?: string;

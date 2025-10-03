@@ -26,7 +26,7 @@ interface Collector {
   id: number;
   username: string;
   communes: string[];
-  expoPushToken?: string;
+  expoPushTokens?: string[];
 }
 
 @Injectable()
@@ -132,15 +132,18 @@ async syncPickups() {
               partner_name: pickup.partners?.name ?? null,
             });
 
-            if (collector.expoPushToken) {
-              await this.notificationsService.sendNotification(
-                collector.expoPushToken,
-                'تم تعيين طلب جديد',
-                `${collector.username}، لديك طلب جديد في ${pickup.address}`,
-                { type: 'NEW_PICKUP', pickupId: pickup.id },
-              );
+            if (collector['expoPushTokens'] && collector['expoPushTokens'].length > 0) {
+              for (const token of collector['expoPushTokens']) {
+                await this.notificationsService.sendNotification(
+                    token,
+                     'تم تعيين طلب جديد',
+                     `${collector.username}، لديك طلب جديد في ${pickup.province}`,
+                     { type: 'NEW_PICKUP', pickupId: pickup.id },
+                    );
+                   }
+                  }
+
             }
-          }
         } catch (e) {
           this.logger.error(` Failed saving pickup ${pickup.id}: ${e instanceof Error ? e.message : e}`);
         }

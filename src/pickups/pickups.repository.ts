@@ -44,5 +44,8 @@ async getPickupsByCollector(collector: { id: any; }) {
   async save(pickup: PickupEntity) {
     return this.repo.save(pickup);
   }
+async findAll(): Promise<PickupEntity[]> {
+  return this.repo.createQueryBuilder('pickup').getMany();
+}
 }
 

@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { NotificationsService } from './notifications.service';
-import { NotificationsController } from './notifications.controller';
+import { CollectorsModule } from '../collectors/collectors.module';
 
 @Module({
+  imports: [
+    HttpModule,
+    forwardRef(() => CollectorsModule), 
+  ],
   providers: [NotificationsService],
-  controllers: [NotificationsController],
   exports: [NotificationsService],
-  
 })
 export class NotificationsModule {}

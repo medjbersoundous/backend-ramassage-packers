@@ -47,20 +47,21 @@ async updatePickup(
       Number(updates.assigned_to),
     );
 
-    if (newCollector?.expoPushToken) {
+   if (newCollector?.expoPushTokens?.length) {
       await this.notificationsService.sendNotification(
-        newCollector.expoPushToken,
-        'تم تعيين طلب جديد',
-        `لديك طلب جديد في ${pickup.address}`,
-        { type: 'NEW_PICKUP', pickupId: pickup.id },
-      );
-    }
+       newCollector.expoPushTokens,
+      'تم تعيين طلب جديد',
+      `لديك طلب جديد في ${pickup.province}`,
+      { type: 'NEW_PICKUP', pickupId: pickup.id },
+     );
+   }
   } else {
     this.pickupsGateway.notifyChange();
   }
 
   return saved;
 }
-
-
+  async getAllPickups(): Promise<PickupEntity[]> {
+    return this.pickupsRepository.findAll();
+  }
 }

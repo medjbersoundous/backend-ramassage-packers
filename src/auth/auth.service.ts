@@ -12,6 +12,7 @@ export class AuthService {
     private readonly collectorsService: CollectorsService,
     private readonly jwtService: JwtService,
   ) {}
+
   async validateCollector(phoneNumber: number, password: string) {
     const collector = await this.collectorsService.findByPhoneNumber(phoneNumber);
     if (!collector) throw new UnauthorizedException('Invalid credentials: collector not found');
@@ -21,6 +22,7 @@ export class AuthService {
 
     return collector;
   }
+
   async getGeneralBackendToken() {
     const { BASE_URL, GENERAL_EMAIL, GENERAL_PASSWORD, API_KEY } = process.env;
 
@@ -105,7 +107,7 @@ export class AuthService {
         username: collector.username,
         phoneNumber: collector.phoneNumber,
         communes: collector.communes,
-        expoPushToken: collector.expoPushToken,
+        expoPushTokens: collector.expoPushTokens, 
         generalAccessToken: generalTokenData.access_token,
         generalRefreshToken: generalTokenData.refresh_token,
       },
@@ -113,6 +115,11 @@ export class AuthService {
       general_access_token: generalTokenData.access_token,
       general_refresh_token: generalTokenData.refresh_token,
     };
+  }
+
+  async logout(collectorId: number, expoPushToken: string) {
+    await this.collectorsService.removeExpoPushToken(collectorId, expoPushToken);
+    return { success: true, message: 'Logged out and token removed' };
   }
 
   async getValidGeneralToken(collectorId: number): Promise<string> {

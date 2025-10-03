@@ -7,11 +7,11 @@ export class NotificationsController {
 
   @Post('send')
   async sendNotification(
-    @Body('expoToken') expoToken: string,
+    @Body('expoTokens') expoTokens: string | string[], 
     @Body('title') title: string,
     @Body('body') body: string,
     @Body('data') data?: Record<string, any>,
   ) {
-    return this.notificationsService.sendNotification(expoToken, title, body, data);
+    return this.notificationsService.sendNotification(expoTokens, title, body, data);
   }
 }

@@ -18,4 +18,12 @@ export class AuthController {
   async refresh(@Body('refresh_token') refreshToken: string) {
     return this.authService.refreshGeneralBackendToken(refreshToken);
   }
+
+  @Post('logout')
+  async logout(
+    @Body('collectorId') collectorId: number,
+    @Body('expoPushToken') expoPushToken: string,
+  ) {
+    return this.authService.logout(Number(collectorId), expoPushToken);
+  }
 }
