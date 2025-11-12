@@ -20,7 +20,7 @@ async getMyPickups(@Req() req: any) {
   return this.pickupsService.getPickupsByCollector(req.user);
 }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('admin-jwt'))
   @Put(':id')
   async updatePickup(
     @Param('id') id: string,
