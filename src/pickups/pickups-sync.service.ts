@@ -92,7 +92,7 @@ async syncPickups() {
           Authorization: `Bearer ${generalToken}`,
         },
         httpsAgent: new https.Agent({ family: 4 }),
-        timeout: 15000,
+        timeout: 30000,
         validateStatus: () => true,
       });
 

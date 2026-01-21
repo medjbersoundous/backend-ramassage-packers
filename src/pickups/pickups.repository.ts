@@ -25,6 +25,8 @@ export class PickupsRepository {
       status: p.status || 'pending',
       created_at: new Date(p.created_at),
       updated_at: new Date(p.updated_at),
+      hasTicket: p.hasTicket ?? null,
+      numberOfPickups: p.numberOfPickups ?? null,
       partner_name: p.partners?.name ?? null, 
       raw: p,
     }));

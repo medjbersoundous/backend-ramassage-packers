@@ -53,16 +53,29 @@ async create(
     return collector;
   }
 
-  async update(id: number, updateData: Partial<Collector>) {
-    const collector = await this.findOne(id);
-
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
-    }
-
-    Object.assign(collector, updateData);
-    return this.collectorsRepo.save(collector);
+async update(id: number, updateData: Partial<Collector>) {
+  const collector = await this.findOne(id);
+  if (
+    typeof updateData.password === 'string' &&
+    updateData.password.trim().length > 0
+  ) {
+    collector.password = await bcrypt.hash(updateData.password, 10);
   }
+  if (updateData.username !== undefined) {
+    collector.username = updateData.username;
+  }
+
+  if (updateData.communes !== undefined) {
+    collector.communes = updateData.communes;
+  }
+
+  if (updateData.expoPushTokens !== undefined) {
+    collector.expoPushTokens = updateData.expoPushTokens;
+  }
+
+  return this.collectorsRepo.save(collector);
+}
+
 
   async remove(id: number) {
     const collector = await this.findOne(id);

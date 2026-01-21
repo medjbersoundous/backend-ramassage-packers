@@ -8,8 +8,9 @@ export class Collector {
   @Column()
   username!: string;
 
-  @Column()
+  @Column({ select: false })
   password!: string;
+    
   @Column({ unique: true })
   phoneNumber!:number;
 
