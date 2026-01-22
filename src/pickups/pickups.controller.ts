@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { PickupsService } from './pickups.service';
 import { PickupEntity } from './pickups.entity';
 import { Collector } from '../collectors/collector.entity'; 
+import { JwtOrAdminGuard } from '../guards/jwt-or-admin/jwt-or-admin.guard';
 @Controller('pickups')
 export class PickupsController {
   constructor(private pickupsService: PickupsService) {}
@@ -20,7 +21,7 @@ async getMyPickups(@Req() req: any) {
   return this.pickupsService.getPickupsByCollector(req.user);
 }
 
-  @UseGuards(AuthGuard('admin-jwt'))
+@UseGuards(JwtOrAdminGuard)
   @Put(':id')
   async updatePickup(
     @Param('id') id: string,

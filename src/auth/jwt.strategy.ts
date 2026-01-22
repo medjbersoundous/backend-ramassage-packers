@@ -16,7 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: payload.sub,
       phoneNumber: payload.phoneNumber,
       general_access_token: payload.general_access_token, 
-      communes: payload.communes
+      communes: payload.communes,
+      role: payload.role || 'collector' 
     };
   }
   

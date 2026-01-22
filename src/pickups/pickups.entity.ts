@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export type PickupStatus = 'pending' | 'done' | 'canceled';
+export type PickupStatus = 'pending' | 'done' | 'canceled' | 'deleted';
 
 @Entity('pickups')
 export class PickupEntity {
@@ -31,7 +31,7 @@ export class PickupEntity {
   @Column({ nullable: true })
   note!: string;
 
-  @Column({ type: 'enum', enum: ['pending', 'done', 'canceled'], default: 'pending' })
+  @Column({ type: 'enum', enum: ['pending', 'done', 'canceled', 'deleted'], default: 'pending' })
   status!: PickupStatus;
 
   @Column({ nullable: true })

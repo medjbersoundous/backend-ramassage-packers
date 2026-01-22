@@ -19,7 +19,7 @@ export class PickupsModule implements OnModuleInit {
   constructor(private readonly pickupsSyncService: PickupsSyncService) {}
 
   async onModuleInit() {
-    console.log('🚀 PickupsModule initialized, starting sync service...');
+    console.log('PickupsModule initialized, starting sync service...');
     await (this.pickupsSyncService as any).onModuleInit();
 
   }
